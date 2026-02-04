@@ -20,6 +20,9 @@ pub fn default_feeds() -> Vec<Feed> {
         // FT has multiple feeds; one common public feed is “World”
         // If this changes, you can replace with any FT RSS you have access to.
         Feed { name: "FT", url: "https://www.ft.com/world?format=rss" },
+        Feed { name: "New York Times", url: "https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml" },
+        Feed { name: "Independent", url: "http://www.independent.co.uk/news/world/rss" },
+        Feed { name: "Guardian", url: "https://www.theguardian.com/world/rss" }
     ]
 }
 
