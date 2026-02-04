@@ -9,6 +9,7 @@ pub enum Action {
     ToggleFull,
     Refresh,
     OpenInBrowser,
+    OpenInW3m,
     StartFilter,
     Backspace,
     FilterChar(char),
@@ -41,6 +42,7 @@ pub fn poll_action(filter_mode: bool) -> anyhow::Result<Action> {
                 (KeyCode::Enter, _) => Action::ToggleFull,
                 (KeyCode::Char('r'), _) => Action::Refresh,
                 (KeyCode::Char('o'), _) => Action::OpenInBrowser,
+                (KeyCode::Char('p'), _) => Action::OpenInW3m,
                 (KeyCode::Char('/'), _) => Action::StartFilter,
                 _ => Action::None,
             })

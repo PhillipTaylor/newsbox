@@ -14,12 +14,13 @@ use ratatui::{backend::CrosstermBackend, Terminal};
 use reqwest::Client;
 use std::io::{self, Stdout};
 use tokio::sync::mpsc;
+use std::process::{Command, Stdio};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let mut terminal = setup_terminal()?;
+    let mut terminal = enter_tui()?;
     let res = run(&mut terminal).await;
-    restore_terminal(&mut terminal)?;
+    let _ = leave_tui(&mut terminal);
     res
 }
 
@@ -100,6 +101,15 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
                 app.status = "Filter cleared.".to_string();
                 filter_mode = false;
             }
+            input::Action::OpenInW3m => {
+                if let Some(a) = app.selected_article() {
+                    match open_in_w3m(terminal, &a.link) {
+                        Ok(()) => app.status = "Returned from w3m.".to_string(),
+                        Err(e) => app.status = format!("Could not launch w3m: {}", e),
+                    }
+                }
+            }
+
 
             input::Action::None => {}
         }
@@ -108,7 +118,29 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
     Ok(())
 }
 
-fn setup_terminal() -> Result<Terminal<CrosstermBackend<Stdout>>> {
+fn open_in_w3m(terminal: &mut Terminal<CrosstermBackend<Stdout>>, url: &str) -> Result<()> {
+    // Leave TUI so w3m can use the terminal normally
+    leave_tui(terminal)?;
+
+    // Run w3m attached to the current terminal session
+    let status = Command::new("w3m")
+        .arg(url)
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status();
+
+    // Re-enter TUI no matter what
+    *terminal = enter_tui()?;
+
+    // Optional: surface non-zero exit as a status message upstream
+    match status {
+        Ok(_s) => Ok(()),
+        Err(e) => Err(e.into()),
+    }
+}
+
+fn enter_tui() -> Result<Terminal<CrosstermBackend<Stdout>>> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
@@ -116,7 +148,7 @@ fn setup_terminal() -> Result<Terminal<CrosstermBackend<Stdout>>> {
     Ok(Terminal::new(backend)?)
 }
 
-fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
+fn leave_tui(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
     terminal.show_cursor()?;
