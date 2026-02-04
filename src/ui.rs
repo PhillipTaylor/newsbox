@@ -18,14 +18,24 @@ pub fn draw(f: &mut Frame, app: &App, filter_mode: bool) {
     let top = if filter_mode {
         format!("Filter: {}", app.filter)
     } else {
-        "newsbox — j/k:move  Enter:read  r:refresh  o:open  /:filter  q:quit".to_string()
+        "newsbox — j/k:move  Enter:read  r:refresh  o:open in browser  p:open in w3m  /:filter  q:quit".to_string()
     };
     f.render_widget(Paragraph::new(top), chunks[0]);
 
-    // Main panes
+    // Main panes - VERTICAL SPLIT
+    //let panes = Layout::default()
+    //    .direction(Direction::Horizontal)
+    //    .constraints([Constraint::Percentage(45), Constraint::Percentage(55)])
+    //    .split(chunks[1]);
+    // Main panes (VERTICAL split: inbox on top, message below)
+
+    // Horizontal split
     let panes = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(45), Constraint::Percentage(55)])
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Percentage(75), // inbox gets most space
+            Constraint::Percentage(25), // message preview smaller
+        ])
         .split(chunks[1]);
 
     // Left: list (email inbox style)
