@@ -2,31 +2,42 @@ use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
 use reqwest::Client;
 use rss::Channel;
+use std::fs;
+use std::path::Path;
 
 use crate::model::Article;
 
-#[derive(Clone, Debug)]
+use serde::Deserialize;
+
+#[derive(Clone, Debug, Deserialize)]
 pub struct Feed {
-    pub name: &'static str,
-    pub url: &'static str,
+    pub name: String,
+    pub url: String,
 }
 
-pub fn default_feeds() -> Vec<Feed> {
-    vec![
-        // BBC RSS
-        Feed { name: "BBC", url: "https://feeds.bbci.co.uk/news/rss.xml" },
-        // Sky News RSS
-        Feed { name: "Sky", url: "https://feeds.skynews.com/feeds/rss/home.xml" },
-        // FT has multiple feeds; one common public feed is “World”
-        // If this changes, you can replace with any FT RSS you have access to.
-        Feed { name: "FT", url: "https://www.ft.com/world?format=rss" },
-        Feed { name: "New York Times", url: "https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml" },
-        Feed { name: "Independent", url: "http://www.independent.co.uk/news/world/rss" },
-        Feed { name: "Guardian", url: "https://www.theguardian.com/world/rss" }
-    ]
+#[derive(Debug, Deserialize)]
+struct FeedConfig {
+    feeds: Vec<Feed>,
+}
+
+pub fn load_feeds_from_yaml() -> Result<Vec<Feed>> {
+    let path = Path::new("feeds.yml");
+
+    let contents = fs::read_to_string(path)
+        .with_context(|| "Could not read feeds.yml from current directory")?;
+
+    let cfg: FeedConfig = serde_yaml::from_str(&contents)
+        .with_context(|| "feeds.yml is not valid YAML")?;
+
+    if cfg.feeds.is_empty() {
+        anyhow::bail!("feeds.yml contains no feeds");
+    }
+
+    Ok(cfg.feeds)
 }
 
 pub async fn fetch_all(client: &Client, feeds: &[Feed]) -> Result<Vec<Article>> {
+
     let mut all = Vec::new();
 
     for feed in feeds {
@@ -42,7 +53,7 @@ pub async fn fetch_all(client: &Client, feeds: &[Feed]) -> Result<Vec<Article>> 
 
 async fn fetch_feed(client: &Client, feed: &Feed) -> Result<Vec<Article>> {
     let bytes = client
-        .get(feed.url)
+        .get(&feed.url)
         .header("User-Agent", "newsbox/0.1 (Rust; TUI)")
         .send()
         .await?

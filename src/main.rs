@@ -29,7 +29,13 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
         .timeout(std::time::Duration::from_secs(15))
         .build()?;
 
-    let feeds = rss::default_feeds();
+    let feeds = match rss::load_feeds_from_yaml() {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Error loading feeds.yml:\n{:#}", e);
+            std::process::exit(1);
+        }
+    };
 
     let (tx, mut rx) = mpsc::channel::<Result<Vec<model::Article>>>(1);
 

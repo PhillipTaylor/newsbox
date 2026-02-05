@@ -1,0 +1,20 @@
+
+feeds:
+  - name: BBC
+    url: https://feeds.bbci.co.uk/news/rss.xml
+
+  - name: Sky
+    url: https://feeds.skynews.com/feeds/rss/home.xml
+
+
+  - name: FT
+    url: https://www.ft.com/world?format=rss
+
+  - name: NYT
+    url: https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml
+
+  - name: Ind
+    url: http://www.independent.co.uk/news/world/rss
+
+  - name: Grdn
+    url: https://www.theguardian.com/world/rss

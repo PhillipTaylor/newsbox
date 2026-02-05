@@ -15,4 +15,5 @@ rss = "2"
 url = "2"
 open = "5"
 unicode-width = "0.1"
-
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
