@@ -130,6 +130,8 @@ fn open_in_w3m(terminal: &mut Terminal<CrosstermBackend<Stdout>>, url: &str) -> 
 
     // Run w3m attached to the current terminal session
     let status = Command::new("w3m")
+        .arg("-o")
+        .arg("confirm_qq=false")
         .arg(url)
         .stdin(Stdio::inherit())
         .stdout(Stdio::inherit())
