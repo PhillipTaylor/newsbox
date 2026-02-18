@@ -6,7 +6,6 @@ feeds:
   - name: Sky
     url: https://feeds.skynews.com/feeds/rss/home.xml
 
-
   - name: FT
     url: https://www.ft.com/world?format=rss
 
@@ -18,3 +17,7 @@ feeds:
 
   - name: Grdn
     url: https://www.theguardian.com/world/rss
+
+  - name: Slashdot
+    url: http://rss.slashdot.org/Slashdot/slashdot?from=rss
+
