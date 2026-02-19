@@ -18,7 +18,7 @@ pub fn draw(f: &mut Frame, app: &App, filter_mode: bool) {
     let top = if filter_mode {
         format!("Filter: {}", app.filter)
     } else {
-        "newsbox — j/k:move  Enter:read  r:refresh  o:open in browser  p:open in w3m  /:filter  q:quit".to_string()
+        "newsbox — j/k:move  r:refresh  o:open in browser  p:open in w3m  /:filter  q:quit".to_string()
     };
     f.render_widget(Paragraph::new(top), chunks[0]);
 
