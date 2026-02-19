@@ -21,3 +21,14 @@ feeds:
   - name: Slashdot
     url: http://rss.slashdot.org/Slashdot/slashdot?from=rss
 
+  - name: Mumsnet Talk
+    url: https://www.mumsnet.com/talk/feed
+
+#  - name: Reddit
+#    url:  https://www.reddit.com/r/technology/.rss
+
+#  - name: UK Politics
+#    url:  https://www.reddit.com/r/ukpolitics/.rss
+
+  - name: Hacker news
+    url:  https://hnrss.org/frontpage
