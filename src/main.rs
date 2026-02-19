@@ -74,6 +74,22 @@ async fn run(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
                 }
             }
 
+            input::Action::PageDown => {
+                let page = inbox_page_size(terminal.size()?.height);
+                if page > 0 {
+                    app.inbox_view_offset = app.inbox_view_offset.saturating_add(page);
+                    clamp_offset(&mut app, page);
+                }
+            }
+
+            input::Action::PageUp => {
+                let page = inbox_page_size(terminal.size()?.height);
+                if page > 0 {
+                    app.inbox_view_offset = app.inbox_view_offset.saturating_sub(page);
+                    // no need to clamp; sub handles floor at 0
+                }
+            }
+
             input::Action::OpenInBrowser => {
                 if let Some(a) = app.selected_article() {
                     if let Err(e) = open::that(&a.link) {
@@ -162,4 +178,22 @@ fn leave_tui(terminal: &mut Terminal<CrosstermBackend<Stdout>>) -> Result<()> {
     terminal.show_cursor()?;
     Ok(())
 }
+
+fn inbox_page_size(term_height: u16) -> usize {
+    if term_height < 4 { return 0; }
+
+    let main = term_height as usize - 2; // minus top + status
+    let inbox = (main * 75) / 100;       // inbox percentage in ui.rs
+    inbox.saturating_sub(2)              // minus borders
+}
+
+fn clamp_offset(app: &mut App, page: usize) {
+    if page == 0 || app.filtered.is_empty() {
+        app.inbox_view_offset = 0;
+        return;
+    }
+    let max_offset = app.filtered.len().saturating_sub(page);
+    app.inbox_view_offset = app.inbox_view_offset.min(max_offset);
+}
+
 

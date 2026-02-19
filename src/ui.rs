@@ -18,16 +18,9 @@ pub fn draw(f: &mut Frame, app: &App, filter_mode: bool) {
     let top = if filter_mode {
         format!("Filter: {}", app.filter)
     } else {
-        "newsbox — j/k:move  r:refresh  o:open in browser  p:open in w3m  /:filter  q:quit".to_string()
+        "newsbox — j/k:move  J/K:page  r:refresh  o:open in browser  p:open in w3m  /:filter  q:quit".to_string()
     };
     f.render_widget(Paragraph::new(top), chunks[0]);
-
-    // Main panes - VERTICAL SPLIT
-    //let panes = Layout::default()
-    //    .direction(Direction::Horizontal)
-    //    .constraints([Constraint::Percentage(45), Constraint::Percentage(55)])
-    //    .split(chunks[1]);
-    // Main panes (VERTICAL split: inbox on top, message below)
 
     // Horizontal split
     let panes = Layout::default()
@@ -39,9 +32,14 @@ pub fn draw(f: &mut Frame, app: &App, filter_mode: bool) {
         .split(chunks[1]);
 
     // Left: list (email inbox style)
-    let items: Vec<ListItem> = app.filtered.iter().enumerate().map(|(pos, idx)| {
+    let inbox_height = panes[0].height.saturating_sub(2) as usize; // min 2 for borders
+    let inbox_page_start = app.inbox_view_offset.min(app.filtered.len());
+    let inbox_page_end = (inbox_page_start + inbox_height).min(app.filtered.len());
+
+    let items: Vec<ListItem> = app.filtered[inbox_page_start..inbox_page_end].iter().enumerate().map(|(pos, idx)| {
+	let abs_pos = pos + app.inbox_view_offset;
         let a = &app.articles[*idx];
-        let prefix = if pos == app.selected { "▶ " } else { "  " };
+        let prefix = if abs_pos == app.selected { "▶ " } else { "  " };
         let line = format!(
             "{}{:<4} {:<16} {}",
             prefix,
@@ -55,9 +53,10 @@ pub fn draw(f: &mut Frame, app: &App, filter_mode: bool) {
     let list = List::new(items)
         .block(Block::default().borders(Borders::ALL).title("Inbox"))
         .highlight_style(Style::default().add_modifier(Modifier::BOLD));
+
     f.render_widget(list, panes[0]);
 
-    // Right: preview (email body)
+    // Bottom: preview (email body)
     let body = if let Some(a) = app.selected_article() {
         let mut text = Text::default();
         text.lines.push(Line::from(a.title.clone()).style(Style::default().add_modifier(Modifier::BOLD)));

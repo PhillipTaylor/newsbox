@@ -6,6 +6,7 @@ pub struct App {
     pub filtered: Vec<usize>, // indices into articles
     pub selected: usize,       // index into filtered
     pub show_full: bool,
+    pub inbox_view_offset: usize,
     pub filter: String,
     pub status: String,
     pub loading: bool,
@@ -18,6 +19,7 @@ impl App {
             filtered: vec![],
             selected: 0,
             show_full: false,
+            inbox_view_offset: 0,
             filter: String::new(),
             status: "Press r to refresh. q to quit.".to_string(),
             loading: false,
@@ -26,6 +28,7 @@ impl App {
 
     pub fn set_articles(&mut self, items: Vec<Article>) {
         self.articles = items;
+        self.inbox_view_offset = 0;
         self.apply_filter();
         self.status = format!("Loaded {} articles", self.filtered.len());
     }
