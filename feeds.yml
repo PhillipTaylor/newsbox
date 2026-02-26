@@ -21,8 +21,20 @@ feeds:
   - name: Slashdot
     url: http://rss.slashdot.org/Slashdot/slashdot?from=rss
 
-  - name: Mumsnet Talk
-    url: https://www.mumsnet.com/talk/feed
+#  - name: Mumsnet
+#    url: https://www.mumsnet.com/talk/feed
+
+  - name: CS2
+    url: https://blog.counter-strike.net/index.php/feed/
+
+#  - name: UKCSGO
+#    url: https://ukcsgo.com/feed/
+
+  - name: HLTV
+    url: http://www.hltv.org/news.rss.php
+
+  - name: Reddit
+    url: https://www.reddit.com/discover.rss
 
 #  - name: Reddit
 #    url:  https://www.reddit.com/r/technology/.rss
@@ -30,5 +42,5 @@ feeds:
 #  - name: UK Politics
 #    url:  https://www.reddit.com/r/ukpolitics/.rss
 
-  - name: Hacker news
+  - name: Hacker 
     url:  https://hnrss.org/frontpage
