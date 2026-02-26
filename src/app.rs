@@ -28,6 +28,7 @@ impl App {
 
     pub fn set_articles(&mut self, items: Vec<Article>) {
         self.articles = items;
+        self.selected = 0;
         self.inbox_view_offset = 0;
         self.apply_filter();
         self.status = format!("Loaded {} articles", self.filtered.len());
